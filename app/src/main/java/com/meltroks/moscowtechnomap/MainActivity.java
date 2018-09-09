@@ -24,9 +24,11 @@ public class MainActivity extends AppCompatActivity {
 
         final Intent intent = new Intent(this, MapsActivity.class);
         final Intent contacts = new Intent(this, ContactsActivity.class);
+        final Intent calendar = new Intent(this, CalendarActivity.class);
 
-        final Button map = (Button) findViewById(R.id.map);
-        final Button contactsButton = (Button) findViewById(R.id.contacts_button);
+        final Button map = findViewById(R.id.map);
+        final Button contactsButton = findViewById(R.id.contacts_button);
+        final Button calendarButton = findViewById(R.id.calendar_button);
 
         map.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         contactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -41,7 +44,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        calendarButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                startActivity(calendar);
+            }
+        });
     }
 
 

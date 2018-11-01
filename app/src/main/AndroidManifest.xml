@@ -5,10 +5,10 @@
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality. 
+         location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -24,7 +24,7 @@
              Note that the API key is linked to the encryption key used to sign the APK.
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -33,7 +33,7 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
@@ -46,11 +46,26 @@
         </activity>
         <activity
             android:name=".ContactsActivity"
-            android:label="Контакты"></activity>
+            android:label="Контакты" />
         <activity
-            android:name=".CalendarActivity"
-            android:label="@string/title_activity_calendar"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name=".EventDataActivity"
+            android:label="@string/title_activity_event_data"
+            android:parentActivityName=".MapsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.meltroks.moscowtechnomap.MapsActivity" />
+        </activity>
+        <activity
+            android:name=".EventDataActivity_w_delete"
+            android:label="EventDataActivity_w_delete"
+            android:parentActivityName=".SavedEventListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.meltroks.moscowtechnomap.MapsActivity" />
+        </activity>
+        <activity android:name=".SavedEventListActivity"></activity>
     </application>
 
 </manifest>

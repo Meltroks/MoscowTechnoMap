@@ -1,38 +1,26 @@
 package com.meltroks.moscowtechnomap;
 
-import android.renderscript.ScriptGroup;
-import android.support.design.widget.FloatingActionButton;
+import android.content.Intent;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v4.widget.DrawerLayout;
+import android.view.MenuItem;
 
-import org.json.*;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Marker;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import java.io.IOException;
 
-    private GoogleMap mMap;
+final public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    public class Spot{
-        double x, y;
-        String name;
-        public Spot(double X, double Y, String Name) {
-            x = X;
-            y = Y;
-            name = Name;
-            SetMarker();
-        }
-        void SetMarker() {
-            LatLng Marker = new LatLng(x, y);
-            mMap.addMarker(new MarkerOptions().position(Marker).title(name));
-        }
-    }
-
+    static GoogleMap mMap;
+    private DrawerLayout mdl;
+    getData gd = new getData();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,29 +30,101 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        mdl = findViewById(R.id.drawer_layout);
+
+        final Intent map_act = new Intent(this, MapsActivity.class);
+        final Intent contacts = new Intent(this, ContactsActivity.class);
+        final Intent savedEvents = new Intent(this, SavedEventListActivity.class);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.bringToFront();
+
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        menuItem.setChecked(true);
+                        int id = menuItem.getItemId();
+
+                        if(id == R.id.nav_refresh){
+                            DataRefresh dr = new DataRefresh();
+                            try {
+                                dr.sendGet();
+                                dr.dataRefill();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else if (id == R.id.nav_map){
+                            startActivity(map_act);
+                        } else if(id == R.id.nav_savedEvents){
+                            startActivity(savedEvents);
+                        } else if (id == R.id.nav_contacts){
+                            startActivity(contacts);
+                        }
+
+                        mdl.closeDrawers();
+                        return true;
+                    }
+                });
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-
-
+    public static MapPoint[] events;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
 
-        Spot Dissident = new Spot(55.760107, 37.646816, "Dissident");
-        Spot Sharaga = new Spot(55.763611, 37.643633, "Харитон");
+        final Intent eventData = new Intent(this, EventDataActivity.class);
+        gd.execute();
+
+        mMap = googleMap;
+        while (true){
+            if(gd.textResult != null) break;
+        }
+
+        textDivider.text = gd.textResult;
+        textDivider.parse();
+
+        while(true){
+            if(DataContainer.ActiveSpots[0] != null) break;
+        }
+
+        int countEvents = 0;
+        for(int i = 0; i< DataContainer.ActiveSpots.length; i++){
+            if(DataContainer.ActiveSpots[i] != null) countEvents++;
+            else break;
+        }
+
+        events = new MapPoint[countEvents];
+
+        for(int i = 0; i < DataContainer.ActiveSpots.length; i++){
+            if(DataContainer.ActiveSpots[i] != null) {
+                for (int j = 0; j < DataContainer.SpotTitles.length; j++) {
+                    if (DataContainer.ActiveSpots[i].equals(DataContainer.SpotTitles[j])) {
+                        events[i] = new MapPoint(DataContainer.SpotX[j], DataContainer.SpotY[j], DataContainer.EventTitles[i], DataContainer.ActiveSpots[i], DataContainer.Descriptions[i]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        mMap.setOnInfoWindowClickListener(
+                new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        for(int i = 0; i<events.length; i++){
+                            if(marker.getTitle().equals(events[i].EventTitle)){
+                                EventDataActivity.inText1 = events[i].EventTitle;
+                                EventDataActivity.inText2 = events[i].EventDescription;
+                                EventDataActivity.inText3 = events[i].SpotTitle;
+                                break;
+                            }
+                        }
+                        startActivity(eventData);
+                    }
+                }
+        );
+
         LatLng Moscow = new LatLng(55.7522200, 37.6155600);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Moscow, 11));
     }
-
 }

@@ -11,17 +11,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class DataRefresh { // это класс для мануального обновления данных страницы, он не работает :^(
+public class DataRefresh {
 
-    public String result = null; // результат гета из вк
-    public String textResult = null; // результат после "расчехления" json - текст поста
+    public String result = null;
+    public String textResult = null;
 
-    public void sendGet() throws IOException { // гет запрос к вк, чтобы он посмотрел в последний пост и взял его данные
+    public void sendGet() throws IOException {
         String url = "https://api.vk.com/method/wall.search?domain=testing11mi3&query=События&owners_only=0&access_token=faefcc8d16559eba98335ceb6c2bb9cf29e5c3ad26d092b7ccb2f4dc2e19f318a95fd4342348ef61bed1a&count=1&v=5.58";
         // faefcc8d16559eba98335ceb6c2bb9cf29e5c3ad26d092b7ccb2f4dc2e19f318a95fd4342348ef61bed1a
-        // это мой токен доступа, то ли старый, то ли новый, я не помню, активный в url лежит
-
-        URL obj; // создаем объект ссылки
+        URL obj;
         {
             try {
                 obj = new URL(url);
@@ -31,9 +29,9 @@ public class DataRefresh { // это класс для мануального о
             }
         }
 
-        HttpURLConnection connection = (HttpURLConnection) obj.openConnection(); // установка соединения
-        connection.setRequestMethod("GET"); // обозначаем, что у нас ГЕТ запрос
-        BufferedReader in; // прием строки
+        HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+        connection.setRequestMethod("GET");
+        BufferedReader in;
         {
             try {
                 in = new BufferedReader(new InputStreamReader((connection.getInputStream())));
@@ -51,7 +49,7 @@ public class DataRefresh { // это класс для мануального о
         }
         in.close();
 
-        result = response.toString(); // result = итоговое значение - полная json строка
+        result = response.toString();
     }
 
     public void dataRefill(){

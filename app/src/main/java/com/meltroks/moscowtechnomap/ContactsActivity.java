@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 public class ContactsActivity extends AppCompatActivity {
 
+    // Активность отображения контактов
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

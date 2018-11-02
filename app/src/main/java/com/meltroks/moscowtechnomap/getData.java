@@ -15,12 +15,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class getData extends AsyncTask <Void, Void, Void> {
+public class getData extends AsyncTask <Void, Void, Void> { // фоновый процесс гет запроса к вк и вытягиванию данных
 
-    public String result = null;
-    public String textResult = null;
+    public String result = null; // полный json
+    public String textResult = null; // текст поста (обработаный json)
 
-    protected void sendGet() throws IOException {
+    protected void sendGet() throws IOException { // гет запрос
         String url = "https://api.vk.com/method/wall.search?domain=testing11mi3&query=События&owners_only=0&access_token=faefcc8d16559eba98335ceb6c2bb9cf29e5c3ad26d092b7ccb2f4dc2e19f318a95fd4342348ef61bed1a&count=1&v=5.58";
         // faefcc8d16559eba98335ceb6c2bb9cf29e5c3ad26d092b7ccb2f4dc2e19f318a95fd4342348ef61bed1a
         URL obj;
@@ -33,9 +33,9 @@ public class getData extends AsyncTask <Void, Void, Void> {
             }
         }
 
-        HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-        connection.setRequestMethod("GET");
-        BufferedReader in;
+        HttpURLConnection connection = (HttpURLConnection) obj.openConnection(); // установка подключения
+        connection.setRequestMethod("GET"); // ГЕТ запрос
+        BufferedReader in; // считывание json
         {
             try {
                 in = new BufferedReader(new InputStreamReader((connection.getInputStream())));
@@ -53,11 +53,11 @@ public class getData extends AsyncTask <Void, Void, Void> {
         }
         in.close();
 
-        result = response.toString();
+        result = response.toString(); // промежуточный результат
     }
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected Void doInBackground(Void... voids) { //запуск процесса и его последующего onPostExecute
         try {
             sendGet();
             while(true) {
@@ -72,7 +72,7 @@ public class getData extends AsyncTask <Void, Void, Void> {
         return null;
     }
 
-    protected void onPostExecute(){
+    protected void onPostExecute(){ // обработка json для того чтобы добраться до текста
 
         if(result != null) {
             String vkText = "0";
@@ -87,8 +87,8 @@ public class getData extends AsyncTask <Void, Void, Void> {
 
             try {
 
-                vkText = vkJson.getString("response");
-                vkJson = new JSONObject(vkText);
+                vkText = vkJson.getString("response");  // пошаговое снятие лишних "слоев" json чтобы добраться до текста
+                vkJson = new JSONObject(vkText);              // возможно, можно было проще..
                 vkText = vkJson.getString("items");
                 JSONArray vkArray = new JSONArray(vkText);
                 JSONObject vkFinal = vkArray.getJSONObject(0);
@@ -100,7 +100,7 @@ public class getData extends AsyncTask <Void, Void, Void> {
                 e.printStackTrace();
             }
 
-            if(vkText != null) textResult = vkText;
+            if(vkText != null) textResult = vkText; // конечный результат
         }
     }
 }
